@@ -116,51 +116,39 @@ each repo however I will include them here for the sake of simplicity.
 
 ### Prerequisites
 
-In order to run Lightspeed, [Golang](https://golang.org/doc/install), [Rust](https://www.rust-lang.org/tools/install), and [npm](https://www.npmjs.com/get-npm) are required. Additionally the Rust repo requires a C compiler. If you get a `linker cc not found` error then you need to install a C compiler.
+In order to run Lightspeed manually you previously had to build each component
+from source. The new system relies on Docker images and a small environment
+file to simplify setup.
 
 ### Installation
 
-#### Clone Repository
+1. **Clone Repository**
 
-```sh
-git clone https://github.com/acarlton5/ITGv2
-```
+   ```sh
+   git clone https://github.com/acarlton5/ITGv2
+   cd ITGv2
+   ```
 
-#### Build Ingest Server
+2. **Create `.env`**
 
-```sh
-cd ingest
-cargo build
-```
+   ```sh
+   cp .env.example .env
+   # Edit .env and set WEBSOCKET_HOST and any other values you need
+   ```
 
-#### Build WebRTC Server
+3. **Start the stack**
 
-Using go get
+   ```sh
+   docker-compose pull      # or docker-compose build
+   docker-compose up -d
+   ```
 
-**Warning: Deprecated method (relies on outdated repository)**
-
-```sh
-export GO111MODULE=on
-go get github.com/acarlton5/ITGv2
-```
-
-Using git
-
-```sh
-cd webrtc
-export GO111MODULE=on
-go build
-```
-
-#### Frontend (Based on React.JS)
-
-```sh
-cd frontend
-npm install
-```
+Lightspeed will then be available in your browser at
+`http://<WEBSOCKET_HOST>` (or the IP/hostname you configured).
 
 ### Community Installation (**Warning: Outdated. Uses deprecated repositories**)
-Some of our awesome community members have written their own installers for Lightspeed. Here are links to those!
+Some of our awesome community members have written their own installers for Lightspeed.
+Here are links to those!
 
 **Note**: If you want to make a custom installer do so in the `/contrib` folder and submit a PR. Please make sure to include a README on how to use it!
 
