@@ -87,17 +87,25 @@ impl Connection {
                         return;
                     }
                     //this command is where we tell the client what port to use
-                    //WARNING: This command does not work properly.
-                    //For some reason the client does not like the port we are sending and defaults to 65535 this is fine for now but will be fixed in the future
+                    // When the client sends a single dot we negotiate the UDP
+                    // port used for the incoming RTP stream. We try to
+                    // allocate a port from the WebRTC server and return an
+                    // error to the client if the allocation fails.
                     Some(FtlCommand::Dot) => {
                         if state.rtp_port.is_none() {
                             state.rtp_port = allocate_port().await;
+                            if state.rtp_port.is_none() {
+                                error!("Failed to allocate RTP port");
+                                let resp = vec!["500 failed to allocate port\n".to_string()];
+                                let _ = conn_send.send(FrameCommand::Send { data: resp }).await;
+                                return;
+                            }
                         }
-                        let port = state.rtp_port.unwrap_or(65535);
+                        let port = state.rtp_port.unwrap();
                         let resp_string = format!("200 hi. Use UDP port {}\n", port);
                         let mut resp = Vec::new();
                         resp.push(resp_string);
-                        //tell the frame task to send our response
+                        // tell the frame task to send our response
                         match conn_send.send(FrameCommand::Send { data: resp }).await {
                             Ok(_) => {
                                 info!("Client connected!");
