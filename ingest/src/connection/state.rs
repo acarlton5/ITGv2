@@ -17,6 +17,8 @@ pub struct ConnectionState {
     pub audio_codec: Option<String>,
     pub audio_payload_type: Option<String>,
     pub audio_ingest_ssrc: Option<String>,
+    pub rtp_port: Option<u16>,
+    pub stream_key: Option<String>,
 }
 
 impl ConnectionState {
@@ -37,6 +39,8 @@ impl ConnectionState {
             audio_codec: None,
             audio_ingest_ssrc: None,
             audio_payload_type: None,
+            rtp_port: None,
+            stream_key: None,
         }
     }
 
