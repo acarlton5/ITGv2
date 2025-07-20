@@ -100,9 +100,9 @@ Here is a diagram that outlines the current implementation and the future implem
 
 ### Components
 
-- [Lightspeed Ingest](https://github.com/GRVYDEV/Lightspeed-ingest)
-- [Lightspeed WebRTC](https://github.com/GRVYDEV/Lightspeed-webrtc)
-- [Lightspeed React](https://github.com/GRVYDEV/Lightspeed-react)
+- [Lightspeed Ingest]
+- [Lightspeed WebRTC]
+- [Lightspeed React]
 
 ## Discord
 We now have a [Discord](https://discord.gg/UpQZANPYmZ) server! This is a great way to stay up to date with the project and join in on the conversation! Come stop by!
@@ -141,7 +141,7 @@ Using go get
 
 ```sh
 export GO111MODULE=on
-go get github.com/GRVYDEV/lightspeed-webrtc
+go get github.com/acarlton5/ITGv2
 ```
 
 Using git
@@ -260,7 +260,7 @@ in the docker-compose.yml
 ```
 git clone https://github.com/acarlton5/ITGv2
 ---
-./Project-Lightspeed  # Monorepo Root
+./ITGv2  # Monorepo Root
    frontend/
    ingest/
    webrtc/
@@ -285,12 +285,12 @@ Paste the below into the services array and change the url to either the IP or t
 **Note**: for the url it is not prefaced by anything. For example, given an IP of 10.0.0.2 you would put `"url": "10.0.0.2"` You do not need to indicate a port since the FTL protocol always uses 8084
 ```json
 {
-    "name": "Project Lightspeed",
+    "name": "ITG",
     "common": false,
     "servers": [
         {
             "name": "SERVER TITLE HERE",
-            "url": "your.lightspeed.hostname"
+            "url": "your.ITG.hostname"
         }
     ],
     "recommended": {
@@ -321,23 +321,9 @@ This key WILL NOT change unless the `hash` file is deleted.
 
 <img src="images/streamkey-example.png" alt="Streamkey example">
 
-## Help
-This project is still very much a work in progress and a lot of improvements will be made to the deployment process. 
-If something is unclear or you are stuck there are two main ways you can get help.
-
-1. [Discord](https://discord.gg/UpQZANPYmZ) - this is the quickest and easiest way I will be able to help you through some deployment issues.
-2. [Create an Issue](https://github.com/acarlton5/ITGv2/issues) - this is another way you can bring attention to something that you want fixed. 
 
 <!-- ROADMAP -->
 
-## Roadmap
-
-I will be fleshing out the roadmap in the coming days. As of right now I want to get this to a point where it is 
-as close to other live streaming services as possible. If there are any features that you want to see then feel 
-free to suggest them!
-
-See the [open issues](https://github.com/acarlton5/ITGv2/issues) for a list of proposed features 
-(and known issues).
 
 ## Bugs
 
@@ -367,14 +353,9 @@ Distributed under the MIT License. See `LICENSE` for more information.
 
 ## Contact
 
-Garrett Graves - [@grvydev](https://twitter.com/grvydev)
 
-Project Link: [https://github.com/acarlton5/ITGv2](https://github.com/acarlton5/ITGv2)
 
 <!-- ACKNOWLEDGEMENTS -->
 
-## Acknowledgements
 
-- [Sean Dubois](https://github.com/Sean-Der)
-- [Hayden McAfee](https://github.com/haydenmc)
 
