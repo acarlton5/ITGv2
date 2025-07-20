@@ -39,7 +39,9 @@ func NewClient(hub *Hub, conn *websocket.Conn, webrtcConn *webrtc.PeerConnection
 // reads from this goroutine.
 func (c *Client) ReadLoop() {
 	defer func() {
-		c.hub.Unregister <- c
+		if !c.hub.Closed() {
+			c.hub.Unregister <- c
+		}
 		c.conn.Close()
 	}()
 	c.conn.SetReadLimit(maxMessageSize)
@@ -118,7 +120,7 @@ func (c *Client) WriteLoop() {
 			}
 			_, err = w.Write(message)
 			if err != nil {
-				log.Printf("could not send message: %s",err)
+				log.Printf("could not send message: %s", err)
 				w.Close()
 				return
 			}
