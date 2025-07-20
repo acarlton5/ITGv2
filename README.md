@@ -227,7 +227,6 @@ The above will serve the build folder on port 80.
 
 View Lightspeed in your web browser by visiting http://hostname or http://your.ip.address.here
 
-
 ---
 
 <!-- DOCKER -->
@@ -235,8 +234,12 @@ View Lightspeed in your web browser by visiting http://hostname or http://your.i
 
 Install [Docker](https://docs.docker.com/get-docker/) and [docker-compose](https://docs.docker.com/compose/install/).
 
-See the `.env` file to configure per your needs. At minimum, you need to set `WEBSOCKET_HOST`. The stream key will be 
-generated automatically on boot, and change each restart, unless you set a static one.
+See the `.env` file to configure per your needs. At minimum, you need to set `WEBSOCKET_HOST`.
+`WEBRTC_SERVER_URL` must point at your Lightspeed WebRTC server (defaults to
+`http://localhost:8080`) so the ingest service can allocate ports for each
+stream. `AUTH_WS_URL` should be the websocket address of the authentication
+service that validates stream keys. The stream key will be generated
+automatically on boot, and change each restart, unless you set a static one.
 
 ### Development
 
@@ -321,9 +324,11 @@ This key WILL NOT change unless the `hash` file is deleted.
 
 <img src="images/streamkey-example.png" alt="Streamkey example">
 
+### Multi-User Streaming
+
+When a streamer connects, the ingest service requests a dedicated UDP port from the WebRTC server using `WEBRTC_SERVER_URL`. That port hosts the stream until it ends, after which it is freed automatically. Each start and stop event is also sent to your auth service via `AUTH_WS_URL` so stream keys can be validated and tracked. Viewers connect to `/websocket?port=<allocated port>` to watch a specific stream.
 
 <!-- ROADMAP -->
-
 
 ## Bugs
 
@@ -353,9 +358,5 @@ Distributed under the MIT License. See `LICENSE` for more information.
 
 ## Contact
 
-
-
 <!-- ACKNOWLEDGEMENTS -->
-
-
 
