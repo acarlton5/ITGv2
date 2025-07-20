@@ -6,13 +6,13 @@ use hex::encode;
 use log::{error, info, warn};
 use rand::distributions::Uniform;
 use rand::{thread_rng, Rng};
-use serde_json::{json, Value};
 use reqwest::Client;
-use tokio_tungstenite::{connect_async, tungstenite::Message};
+use serde_json::{json, Value};
 use state::ConnectionState;
 use std::env;
 use tokio::net::TcpStream;
 use tokio::sync::mpsc;
+use tokio_tungstenite::{connect_async, tungstenite::Message};
 use tokio_util::codec::Framed;
 
 #[derive(Debug)]
@@ -93,17 +93,29 @@ impl Connection {
                         if state.rtp_port.is_none() {
                             state.rtp_port = allocate_port().await;
                         }
-                        let port = state.rtp_port.unwrap_or(65535);
-                        let resp_string = format!("200 hi. Use UDP port {}\n", port);
-                        let mut resp = Vec::new();
-                        resp.push(resp_string);
-                        //tell the frame task to send our response
-                        match conn_send.send(FrameCommand::Send { data: resp }).await {
-                            Ok(_) => {
-                                info!("Client connected!");
-                                state.print()
+                        if let Some(port) = state.rtp_port {
+                            let resp_string = format!("200 hi. Use UDP port {}\n", port);
+                            let mut resp = Vec::new();
+                            resp.push(resp_string);
+                            //tell the frame task to send our response
+                            match conn_send.send(FrameCommand::Send { data: resp }).await {
+                                Ok(_) => {
+                                    info!("Client connected!");
+                                    state.print()
+                                }
+                                Err(e) => {
+                                    error!(
+                                        "Error sending to frame task (From: Handle HMAC) {:?}",
+                                        e
+                                    );
+                                    return;
+                                }
                             }
-                            Err(e) => {
+                        } else {
+                            warn!("Port allocation failed, sending error to client");
+                            let resp = vec!["500 Port allocation failed\n".to_string()];
+                            if let Err(e) = conn_send.send(FrameCommand::Send { data: resp }).await
+                            {
                                 error!("Error sending to frame task (From: Handle HMAC) {:?}", e);
                                 return;
                             }
@@ -193,7 +205,7 @@ async fn handle_command(
                         ),
                     }
                 }
-                
+
                 (None, _) => {
                     error!("No stream key attached to connect command");
                 }
@@ -297,12 +309,22 @@ async fn notify_stream_end(stream_key: &str) -> Result<(), Box<dyn std::error::E
 }
 
 async fn allocate_port() -> Option<u16> {
-    let base = env::var("WEBRTC_SERVER_URL").unwrap_or_else(|_| "http://localhost:8080".to_string());
+    let base =
+        env::var("WEBRTC_SERVER_URL").unwrap_or_else(|_| "http://localhost:8080".to_string());
     let client = Client::new();
     match client.post(format!("{}/stream", base)).send().await {
         Ok(resp) => match resp.json::<Value>().await {
-            Ok(v) => v.get("port").and_then(|p| p.as_u64()).map(|p| p as u16),
-            Err(_) => None,
+            Ok(v) => match v.get("port").and_then(|p| p.as_u64()) {
+                Some(p) => Some(p as u16),
+                None => {
+                    warn!("Port allocation response missing 'port' field");
+                    None
+                }
+            },
+            Err(e) => {
+                warn!("Port allocation parse failed: {:?}", e);
+                None
+            }
         },
         Err(e) => {
             warn!("Port allocation failed: {:?}", e);
@@ -312,7 +334,8 @@ async fn allocate_port() -> Option<u16> {
 }
 
 async fn free_port(port: u16) {
-    let base = env::var("WEBRTC_SERVER_URL").unwrap_or_else(|_| "http://localhost:8080".to_string());
+    let base =
+        env::var("WEBRTC_SERVER_URL").unwrap_or_else(|_| "http://localhost:8080".to_string());
     let client = Client::new();
     let _ = client
         .delete(format!("{}/stream?port={}", base, port))
