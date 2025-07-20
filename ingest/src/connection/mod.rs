@@ -4,13 +4,12 @@ use crate::ftl_codec::{FtlCodec, FtlCommand};
 use futures::{SinkExt, StreamExt};
 use hex::encode;
 use log::{error, info, warn};
-use rand::distributions::{Alphanumeric, Uniform};
+use rand::distributions::Uniform;
 use rand::{thread_rng, Rng};
 use serde_json::{json, Value};
 use reqwest::Client;
 use tokio_tungstenite::{connect_async, tungstenite::Message};
 use state::ConnectionState;
-use std::fs;
 use std::env;
 use tokio::net::TcpStream;
 use tokio::sync::mpsc;
@@ -329,61 +328,4 @@ fn generate_hmac() -> String {
         hmac_payload.push(rng.sample(dist));
     }
     encode(hmac_payload.as_slice())
-}
-
-fn generate_stream_key() -> Vec<u8> {
-    let stream_key: String = String::from_utf8(thread_rng()
-        .sample_iter(&Alphanumeric).take(32).collect())
-        .expect("Failed to convert random key to string! Please open an issue and tell the devs to handle this!");
-    fs::write("hash", hex::encode(&stream_key)).expect("Unable to write file");
-
-    stream_key.as_bytes().to_vec()
-}
-
-fn print_stream_key(stream_key: Vec<u8>) {
-    info!(
-        // ANSI escape codes to color stream key output
-        "Your stream key is: \x1b[31;1;4m77-{}\x1b[0m",
-        std::str::from_utf8(&stream_key).unwrap()
-    );
-}
-
-pub fn read_stream_key(startup: bool, stream_key_env: Option<&str>) -> Vec<u8> {
-    if startup {
-        if let Some(stream_key) = stream_key_env {
-            if !stream_key.is_empty() {
-                let key = stream_key.as_bytes().to_vec();
-                print_stream_key(key.to_vec());
-                fs::write("hash", hex::encode(&stream_key))
-                    .expect("Unable to write stream key to hash file");
-                return key;
-            }
-        }
-        match fs::read_to_string("hash") {
-            Err(_) => {
-                let stream_key = generate_stream_key();
-                warn!("Could not read stream key. Re-generating...");
-                print_stream_key(stream_key.to_vec());
-                stream_key
-            }
-            Ok(file) => {
-                info!("Loading existing stream key...");
-                match hex::decode(file) {
-                    Err(_) => {
-                        let stream_key = generate_stream_key();
-                        warn!("Error decoding stream key. Re-generating...");
-                        print_stream_key(stream_key.to_vec());
-                        stream_key
-                    }
-                    Ok(stream_key) => {
-                        print_stream_key(stream_key.to_vec());
-                        stream_key
-                    }
-                }
-            }
-        }
-    } else {
-        let file = fs::read_to_string("hash").unwrap();
-        hex::decode(file).unwrap()
-    }
 }
