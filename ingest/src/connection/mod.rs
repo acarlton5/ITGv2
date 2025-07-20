@@ -1,3 +1,5 @@
+// Module handling FTL connection logic
+pub mod state;
 use crate::ftl_codec::{FtlCodec, FtlCommand};
 use futures::{SinkExt, StreamExt};
 use hex::{decode, encode};
@@ -5,6 +7,7 @@ use log::{error, info, warn};
 use rand::distributions::{Alphanumeric, Uniform};
 use rand::{thread_rng, Rng};
 use ring::hmac;
+use state::ConnectionState;
 use std::fs;
 use tokio::net::TcpStream;
 use tokio::sync::mpsc;
@@ -15,82 +18,8 @@ enum FrameCommand {
     Send { data: Vec<String> },
     // Kill,
 }
+// Represents a client connection
 pub struct Connection {}
-#[derive(Debug)]
-pub struct ConnectionState {
-    pub hmac_payload: Option<String>,
-    pub protocol_version: Option<String>,
-    pub vendor_name: Option<String>,
-    pub vendor_version: Option<String>,
-    pub video: bool,
-    pub video_codec: Option<String>,
-    pub video_height: Option<String>,
-    pub video_width: Option<String>,
-    pub video_payload_type: Option<String>,
-    pub video_ingest_ssrc: Option<String>,
-    pub audio: bool,
-    pub audio_codec: Option<String>,
-    pub audio_payload_type: Option<String>,
-    pub audio_ingest_ssrc: Option<String>,
-}
-
-impl ConnectionState {
-    pub fn get_payload(&self) -> String {
-        match &self.hmac_payload {
-            Some(payload) => payload.clone(),
-            None => String::new(),
-        }
-    }
-    pub fn new() -> ConnectionState {
-        ConnectionState {
-            hmac_payload: None,
-            protocol_version: None,
-            vendor_name: None,
-            vendor_version: None,
-            video: false,
-            video_codec: None,
-            video_height: None,
-            video_width: None,
-            video_payload_type: None,
-            video_ingest_ssrc: None,
-            audio: false,
-            audio_codec: None,
-            audio_ingest_ssrc: None,
-            audio_payload_type: None,
-        }
-    }
-    pub fn print(&self) {
-        match &self.protocol_version {
-            Some(p) => info!("Protocol Version: {}", p),
-            None => warn!("Protocol Version: None"),
-        }
-        match &self.vendor_name {
-            Some(v) => info!("Vendor Name: {}", v),
-            None => warn!("Vendor Name: None"),
-        }
-        match &self.vendor_version {
-            Some(v) => info!("Vendor Version: {}", v),
-            None => warn!("Vendor Version: None"),
-        }
-        match &self.video_codec {
-            Some(v) => info!("Video Codec: {}", v),
-            None => warn!("Video Codec: None"),
-        }
-
-        match &self.video_height {
-            Some(v) => info!("Video Height: {}", v),
-            None => warn!("Video Height: None"),
-        }
-        match &self.video_width {
-            Some(v) => info!("Video Width: {}", v),
-            None => warn!("Video Width: None"),
-        }
-        match &self.audio_codec {
-            Some(a) => info!("Audio Codec: {}", a),
-            None => warn!("Audio Codec: None"),
-        }
-    }
-}
 impl Connection {
     //initialize connection
     pub fn init(stream: TcpStream) {
