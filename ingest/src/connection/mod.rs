@@ -2,13 +2,16 @@
 pub mod state;
 use crate::ftl_codec::{FtlCodec, FtlCommand};
 use futures::{SinkExt, StreamExt};
-use hex::{decode, encode};
+use hex::encode;
 use log::{error, info, warn};
 use rand::distributions::{Alphanumeric, Uniform};
 use rand::{thread_rng, Rng};
-use ring::hmac;
+use serde_json::{json, Value};
+use reqwest::Client;
+use tokio_tungstenite::{connect_async, tungstenite::Message};
 use state::ConnectionState;
 use std::fs;
+use std::env;
 use tokio::net::TcpStream;
 use tokio::sync::mpsc;
 use tokio_util::codec::Framed;
@@ -74,13 +77,25 @@ impl Connection {
                 //wait until the frame task sends us a command
                 match conn_receive.recv().await {
                     Some(FtlCommand::Disconnect) => {
-                        //TODO: Determine what needs to happen here
+                        if let Some(ref key) = state.stream_key {
+                            if let Err(e) = notify_stream_end(key).await {
+                                error!("Failed to notify end of stream: {:?}", e);
+                            }
+                        }
+                        if let Some(port) = state.rtp_port {
+                            free_port(port).await;
+                        }
+                        return;
                     }
                     //this command is where we tell the client what port to use
                     //WARNING: This command does not work properly.
                     //For some reason the client does not like the port we are sending and defaults to 65535 this is fine for now but will be fixed in the future
                     Some(FtlCommand::Dot) => {
-                        let resp_string = "200 hi. Use UDP port 65535\n".to_string();
+                        if state.rtp_port.is_none() {
+                            state.rtp_port = allocate_port().await;
+                        }
+                        let port = state.rtp_port.unwrap_or(65535);
+                        let resp_string = format!("200 hi. Use UDP port {}\n", port);
                         let mut resp = Vec::new();
                         resp.push(resp_string);
                         //tell the frame task to send our response
@@ -100,6 +115,12 @@ impl Connection {
                     }
                     None => {
                         error!("Nothing received from the frame");
+                        if let Some(ref key) = state.stream_key {
+                            let _ = notify_stream_end(key).await;
+                        }
+                        if let Some(port) = state.rtp_port {
+                            free_port(port).await;
+                        }
                         return;
                     }
                 }
@@ -157,37 +178,23 @@ async fn handle_command(
             }
         }
         FtlCommand::Connect { data } => {
-            //make sure we receive a valid channel id and stream key
+            // make sure we receive a valid channel id and stream key
             match (data.get("stream_key"), data.get("channel_id")) {
                 (Some(key), Some(_channel_id)) => {
-                    //decode the client hash
-                    let client_hash = hex::decode(key).expect("error with hash decode");
-                    let key = hmac::Key::new(hmac::HMAC_SHA512, &read_stream_key(false, Some("")));
-                    //compare the two hashes to ensure they match
-                    match hmac::verify(
-                        &key,
-                        decode(conn.get_payload().into_bytes())
-                            .expect("error with payload decode")
-                            .as_slice(),
-                        client_hash.as_slice(),
-                    ) {
-                        Ok(_) => {
-                            info!("Hashes match!");
-                            let resp = vec!["200\n".to_string()];
-                            match sender.send(FrameCommand::Send { data: resp }).await {
-                                Ok(_) => {}
-                                Err(e) => error!(
-                                    "Error sending to frame task (From: Handle Connection) {:?}",
-                                    e
-                                ),
-                            }
-                        }
-                        _ => {
-                            error!("Hashes do not equal");
-                        }
-                    };
+                    conn.stream_key = Some(key.clone());
+                    if let Err(e) = notify_stream_start(key.clone()).await {
+                        error!("Auth stream error: {:?}", e);
+                    }
+                    let resp = vec!["200\n".to_string()];
+                    match sender.send(FrameCommand::Send { data: resp }).await {
+                        Ok(_) => {}
+                        Err(e) => error!(
+                            "Error sending to frame task (From: Handle Connection) {:?}",
+                            e
+                        ),
+                    }
                 }
-
+                
                 (None, _) => {
                     error!("No stream key attached to connect command");
                 }
@@ -267,6 +274,51 @@ async fn handle_command(
             warn!("Command not implemented yet. Tell GRVY to quit his day job");
         }
     }
+}
+
+async fn notify_stream_start(stream_key: String) -> Result<(), Box<dyn std::error::Error>> {
+    let (ws_stream, _) = connect_async("wss://meow.com/stream/auth").await?;
+    let (mut write, mut read) = ws_stream.split();
+    let msg = json!({ "stream_key": stream_key });
+    write.send(Message::Text(msg.to_string().into())).await?;
+    if let Some(msg) = read.next().await {
+        if let Ok(Message::Text(t)) = msg {
+            info!("Auth status: {}", t);
+        }
+    }
+    Ok(())
+}
+
+async fn notify_stream_end(stream_key: &str) -> Result<(), Box<dyn std::error::Error>> {
+    let (ws_stream, _) = connect_async("wss://meow.com/stream/auth").await?;
+    let (mut write, _read) = ws_stream.split();
+    let msg = json!({ "stream_key": stream_key, "status": "ended" });
+    write.send(Message::Text(msg.to_string().into())).await?;
+    Ok(())
+}
+
+async fn allocate_port() -> Option<u16> {
+    let base = env::var("WEBRTC_SERVER_URL").unwrap_or_else(|_| "http://localhost:8080".to_string());
+    let client = Client::new();
+    match client.post(format!("{}/stream", base)).send().await {
+        Ok(resp) => match resp.json::<Value>().await {
+            Ok(v) => v.get("port").and_then(|p| p.as_u64()).map(|p| p as u16),
+            Err(_) => None,
+        },
+        Err(e) => {
+            warn!("Port allocation failed: {:?}", e);
+            None
+        }
+    }
+}
+
+async fn free_port(port: u16) {
+    let base = env::var("WEBRTC_SERVER_URL").unwrap_or_else(|_| "http://localhost:8080".to_string());
+    let client = Client::new();
+    let _ = client
+        .delete(format!("{}/stream?port={}", base, port))
+        .send()
+        .await;
 }
 
 fn generate_hmac() -> String {

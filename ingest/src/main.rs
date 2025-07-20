@@ -51,8 +51,6 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     };
     let _ = CombinedLogger::init(loggers);
 
-    let stream_key_env = matches.value_of("stream-key");
-    let _ = connection::read_stream_key(true, stream_key_env);
     info!("Listening on {}:8084", bind_address);
     let listener = TcpListener::bind(format!("{}:8084", bind_address)).await?;
 

@@ -3,7 +3,6 @@ package server
 
 import (
 	"encoding/json"
-	"fmt"
 	"log"
 	"net"
 	"net/http"
@@ -32,84 +31,45 @@ type Config struct {
 }
 
 // Server wraps all state required for serving WebRTC streams.
+type Stream struct {
+        port       int
+        videoTrack *webrtc.TrackLocalStaticRTP
+        audioTrack *webrtc.TrackLocalStaticRTP
+        hub        *ws.Hub
+       conn       *net.UDPConn
+}
+
 type Server struct {
-	cfg        Config
-	upgrader   websocket.Upgrader
-	videoTrack *webrtc.TrackLocalStaticRTP
-	audioTrack *webrtc.TrackLocalStaticRTP
-	hub        *ws.Hub
+        cfg      Config
+        upgrader websocket.Upgrader
+        streams  map[int]*Stream
+        mu       sync.Mutex
 }
 
 // New creates a new server instance using the provided configuration.
 func New(cfg Config) (*Server, error) {
-	// Create RTP tracks that are shared by all peers.
-	v, err := webrtc.NewTrackLocalStaticRTP(
-		webrtc.RTPCodecCapability{MimeType: "video/H264"}, "video", "pion")
-	if err != nil {
-		return nil, err
-	}
-	a, err := webrtc.NewTrackLocalStaticRTP(
-		webrtc.RTPCodecCapability{MimeType: "audio/opus"}, "audio", "pion")
-	if err != nil {
-		return nil, err
+	s := &Server{
+		cfg:      cfg,
+		upgrader: websocket.Upgrader{CheckOrigin: func(r *http.Request) bool { return true }},
+		streams:  make(map[int]*Stream),
 	}
 
-	return &Server{
-		cfg:        cfg,
-		upgrader:   websocket.Upgrader{CheckOrigin: func(r *http.Request) bool { return true }},
-		videoTrack: v,
-		audioTrack: a,
-		hub:        ws.NewHub(),
-	}, nil
+	if _, err := s.createStream(cfg.RTPPort); err != nil {
+		return nil, err
+	}
+	return s, nil
 }
 
 // Start launches the hub, websocket server and begins consuming RTP packets.
 func (s *Server) Start() error {
-	go s.hub.Run()
 	go s.serveHTTP()
-	return s.consumeRTP()
-}
-
-// consumeRTP listens for incoming RTP and forwards the packets to all clients.
-func (s *Server) consumeRTP() error {
-	listener, err := net.ListenUDP("udp", &net.UDPAddr{IP: net.ParseIP(s.cfg.Addr), Port: s.cfg.RTPPort})
-	if err != nil {
-		return err
-	}
-	defer listener.Close()
-
-	inbound := make([]byte, 4096)
-	var once sync.Once
-	fmt.Println("Waiting for RTP Packets")
-
-	for {
-		n, _, err := listener.ReadFrom(inbound)
-		once.Do(func() { fmt.Print("houston we have a packet") })
-		if err != nil {
-			return err
-		}
-		pkt := &rtp.Packet{}
-		if err = pkt.Unmarshal(inbound[:n]); err != nil {
-			// Ignore malformed packets but continue
-			continue
-		}
-
-		switch pkt.Header.PayloadType {
-		case 96:
-			if _, err = s.videoTrack.Write(inbound[:n]); err != nil {
-				return err
-			}
-		case 97:
-			if _, err = s.audioTrack.Write(inbound[:n]); err != nil {
-				return err
-			}
-		}
-	}
+	return nil
 }
 
 // serveHTTP starts the websocket endpoint used for signaling.
 func (s *Server) serveHTTP() {
 	http.HandleFunc("/websocket", s.websocketHandler)
+	http.HandleFunc("/stream", s.streamHandler)
 	addr := s.cfg.Addr + ":" + strconv.Itoa(s.cfg.WSPort)
 	if s.cfg.SSLCert != "" && s.cfg.SSLKey != "" {
 		log.Fatal(http.ListenAndServeTLS(addr, s.cfg.SSLCert, s.cfg.SSLKey, nil))
@@ -118,8 +78,61 @@ func (s *Server) serveHTTP() {
 	}
 }
 
+// streamHandler creates a new stream on demand. The optional `port` query
+// parameter allows specifying the UDP port to listen on. If omitted or zero, a
+// random port is chosen. It responds with a JSON object containing the actual
+// port in use.
+func (s *Server) streamHandler(w http.ResponseWriter, r *http.Request) {
+       switch r.Method {
+       case http.MethodPost:
+               port := 0
+               if p := r.URL.Query().Get("port"); p != "" {
+                       if v, err := strconv.Atoi(p); err == nil {
+                               port = v
+                       }
+               }
+
+               st, err := s.createStream(port)
+               if err != nil {
+                       http.Error(w, err.Error(), http.StatusInternalServerError)
+                       return
+               }
+               _ = json.NewEncoder(w).Encode(map[string]int{"port": st.port})
+       case http.MethodDelete:
+               p := r.URL.Query().Get("port")
+               if p == "" {
+                       w.WriteHeader(http.StatusBadRequest)
+                       return
+               }
+               port, err := strconv.Atoi(p)
+               if err != nil {
+                       w.WriteHeader(http.StatusBadRequest)
+                       return
+               }
+               s.deleteStream(port)
+               w.WriteHeader(http.StatusNoContent)
+       default:
+               w.WriteHeader(http.StatusMethodNotAllowed)
+       }
+}
+
 // websocketHandler negotiates a single WebRTC peer connection over websocket.
 func (s *Server) websocketHandler(w http.ResponseWriter, r *http.Request) {
+	port := s.cfg.RTPPort
+	if p := r.URL.Query().Get("port"); p != "" {
+		if v, err := strconv.Atoi(p); err == nil {
+			port = v
+		}
+	}
+
+	s.mu.Lock()
+	stream, ok := s.streams[port]
+	s.mu.Unlock()
+	if !ok {
+		http.Error(w, "unknown stream", http.StatusNotFound)
+		return
+	}
+
 	conn, err := s.upgrader.Upgrade(w, r, nil)
 	if err != nil {
 		log.Print("upgrade:", err)
@@ -135,10 +148,10 @@ func (s *Server) websocketHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	defer peerConnection.Close()
 
-	// Attach tracks so all clients share the incoming stream.
-	vtx, err := peerConnection.AddTransceiverFromTrack(s.videoTrack,
+	// Attach tracks for this stream.
+	vtx, err := peerConnection.AddTransceiverFromTrack(stream.videoTrack,
 		webrtc.RTPTransceiverInit{Direction: webrtc.RTPTransceiverDirectionSendonly})
-	atx, err := peerConnection.AddTransceiverFromTrack(s.audioTrack,
+	atx, err := peerConnection.AddTransceiverFromTrack(stream.audioTrack,
 		webrtc.RTPTransceiverInit{Direction: webrtc.RTPTransceiverDirectionSendonly})
 	if err != nil {
 		log.Print(err)
@@ -158,9 +171,9 @@ func (s *Server) websocketHandler(w http.ResponseWriter, r *http.Request) {
 		}
 	}()
 
-	c := ws.NewClient(s.hub, conn, peerConnection)
+	c := ws.NewClient(stream.hub, conn, peerConnection)
 	go c.WriteLoop()
-	s.hub.Register <- c
+	stream.hub.Register <- c
 
 	peerConnection.OnICECandidate(func(i *webrtc.ICECandidate) {
 		if i == nil {
@@ -172,11 +185,11 @@ func (s *Server) websocketHandler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 		if msg, err := json.Marshal(ws.WebsocketMessage{Event: ws.MessageTypeCandidate, Data: candidateString}); err == nil {
-			s.hub.RLock()
-			if _, ok := s.hub.Clients[c]; ok {
+			stream.hub.RLock()
+			if _, ok := stream.hub.Clients[c]; ok {
 				c.Send <- msg
 			}
-			s.hub.RUnlock()
+			stream.hub.RUnlock()
 		}
 	})
 
@@ -186,9 +199,9 @@ func (s *Server) websocketHandler(w http.ResponseWriter, r *http.Request) {
 			if err := peerConnection.Close(); err != nil {
 				log.Print(err)
 			}
-			s.hub.Unregister <- c
+			stream.hub.Unregister <- c
 		case webrtc.PeerConnectionStateClosed:
-			s.hub.Unregister <- c
+			stream.hub.Unregister <- c
 		}
 	})
 
@@ -204,16 +217,81 @@ func (s *Server) websocketHandler(w http.ResponseWriter, r *http.Request) {
 		log.Print(err)
 	}
 	if msg, err := json.Marshal(ws.WebsocketMessage{Event: ws.MessageTypeOffer, Data: offerString}); err == nil {
-		s.hub.RLock()
-		if _, ok := s.hub.Clients[c]; ok {
+		stream.hub.RLock()
+		if _, ok := stream.hub.Clients[c]; ok {
 			c.Send <- msg
 		}
-		s.hub.RUnlock()
+		stream.hub.RUnlock()
 	} else {
 		log.Printf("could not marshal ws message: %s", err)
 	}
 
 	c.ReadLoop()
+}
+
+// createStream initializes a new Stream listening on the provided port. If port
+// is 0, the system will choose an available one. The new Stream begins
+// consuming RTP immediately.
+func (s *Server) createStream(port int) (*Stream, error) {
+       l, err := net.ListenUDP("udp", &net.UDPAddr{IP: net.ParseIP(s.cfg.Addr), Port: port})
+       if err != nil {
+               return nil, err
+       }
+
+	v, err := webrtc.NewTrackLocalStaticRTP(
+		webrtc.RTPCodecCapability{MimeType: "video/H264"}, "video", "pion")
+	if err != nil {
+		l.Close()
+		return nil, err
+	}
+	a, err := webrtc.NewTrackLocalStaticRTP(
+		webrtc.RTPCodecCapability{MimeType: "audio/opus"}, "audio", "pion")
+	if err != nil {
+		l.Close()
+		return nil, err
+	}
+
+       st := &Stream{port: l.LocalAddr().(*net.UDPAddr).Port, videoTrack: v, audioTrack: a, hub: ws.NewHub(), conn: l}
+       s.mu.Lock()
+       s.streams[st.port] = st
+       s.mu.Unlock()
+
+       go st.hub.Run()
+       go func(stream *Stream) {
+               defer stream.conn.Close()
+               inbound := make([]byte, 4096)
+               for {
+                       n, _, err := stream.conn.ReadFrom(inbound)
+                       if err != nil {
+                               return
+                       }
+                       pkt := &rtp.Packet{}
+                       if err = pkt.Unmarshal(inbound[:n]); err != nil {
+                               continue
+                       }
+                       switch pkt.Header.PayloadType {
+                       case 96:
+                               _, _ = stream.videoTrack.Write(inbound[:n])
+                       case 97:
+                               _, _ = stream.audioTrack.Write(inbound[:n])
+                       }
+               }
+       }(st)
+
+       return st, nil
+}
+
+// deleteStream closes and removes the stream associated with the UDP port.
+func (s *Server) deleteStream(port int) {
+       s.mu.Lock()
+       st, ok := s.streams[port]
+       if ok {
+               delete(s.streams, port)
+       }
+       s.mu.Unlock()
+       if ok {
+               st.conn.Close()
+       }
 }
 
 // createAPI configures the Pion API based on server options.
