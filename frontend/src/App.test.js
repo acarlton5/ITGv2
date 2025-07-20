@@ -1,8 +1,16 @@
 import { render, screen } from '@testing-library/react';
 import App from './App';
+import RTCProvider from './context/RTCPeerContext';
+import SocketProvider from './context/SocketContext';
 
-test('renders learn react link', () => {
-  render(<App />);
-  const linkElement = screen.getByText(/learn react/i);
-  expect(linkElement).toBeInTheDocument();
+test('renders Project Lightspeed header', () => {
+  render(
+    <RTCProvider>
+      <SocketProvider>
+        <App />
+      </SocketProvider>
+    </RTCProvider>
+  );
+  const headers = screen.getAllByText(/Project Lightspeed/i);
+  expect(headers.length).toBeGreaterThan(0);
 });
