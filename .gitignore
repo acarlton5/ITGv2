@@ -1,0 +1,4 @@
+# Ignore Node dependencies
+frontend/node_modules/
+# Ignore Rust target directory
+ingest/target/
