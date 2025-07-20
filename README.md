@@ -1,29 +1,27 @@
 <p align="center">
-<a  href="https://github.com/GRVYDEV/Project-Lightspeed">
+<a  href="https://github.com/acarlton5/ITGv2">
     <img src="images/lightspeedlogo.svg" alt="Logo" width="150" height="150">
 </a>
 </p>
   <h1 align="center">Project Lightspeed</h1>
 <div align="center">
-    <a href="https://github.com/GRVYDEV/Project-Lightspeed/stargazers"><img src="https://img.shields.io/github/stars/GRVYDEV/Project-Lightspeed" alt="Stars Badge"/></a>
-    <a href="https://github.com/GRVYDEV/Project-Lightspeed/network/members"><img src="https://img.shields.io/github/forks/GRVYDEV/Project-Lightspeed" alt="Forks Badge"/></a>
-    <a href="https://github.com/GRVYDEV/Project-Lightspeed/pulls"><img src="https://img.shields.io/github/issues-pr/GRVYDEV/Project-Lightspeed" alt="Pull Requests Badge"/></a>
-    <a href="https://github.com/GRVYDEV/Project-Lightspeed/issues"><img src="https://img.shields.io/github/issues/GRVYDEV/Project-Lightspeed" alt="Issues Badge"/></a>
-    <a href="https://github.com/GRVYDEV/Project-Lightspeed/graphs/contributors"><img alt="GitHub contributors" src="https://img.shields.io/github/contributors/GRVYDEV/Project-Lightspeed?color=2b9348"></a>
-    <a href="https://github.com/GRVYDEV/Project-Lightspeed/blob/master/LICENSE"><img src="https://img.shields.io/github/license/GRVYDEV/Project-Lightspeed?color=2b9348" alt="License Badge"/></a>
+    <a href="https://github.com/acarlton5/ITGv2/stargazers"><img src="https://img.shields.io/github/stars/acarlton5/ITGv2" alt="Stars Badge"/></a>
+    <a href="https://github.com/acarlton5/ITGv2/network/members"><img src="https://img.shields.io/github/forks/acarlton5/ITGv2" alt="Forks Badge"/></a>
+    <a href="https://github.com/acarlton5/ITGv2/pulls"><img src="https://img.shields.io/github/issues-pr/acarlton5/ITGv2" alt="Pull Requests Badge"/></a>
+    <a href="https://github.com/acarlton5/ITGv2/issues"><img src="https://img.shields.io/github/issues/acarlton5/ITGv2" alt="Issues Badge"/></a>
+    <a href="https://github.com/acarlton5/ITGv2/graphs/contributors"><img alt="GitHub contributors" src="https://img.shields.io/github/contributors/acarlton5/ITGv2?color=2b9348"></a>
+    <a href="https://github.com/acarlton5/ITGv2/blob/master/LICENSE"><img src="https://img.shields.io/github/license/acarlton5/ITGv2?color=2b9348" alt="License Badge"/></a>
 </div>
 <br />
 <p align="center">
     A self contained OBS -> FTL -> WebRTC live streaming server. Comprised of 3 parts once configured anyone can achieve sub-second OBS to the browser livestreaming 
-    <!-- <br /> -->
-    <!-- <a href="https://github.com/GRVYDEV/Project-Lightspeed"><strong>Explore the docs »</strong></a> -->
     <br />
     <br />
     <a href="https://youtu.be/Dzin4_A8RDs">View Demo</a>
     ·
-    <a href="https://github.com/GRVYDEV/Project-Lightspeed/issues">Report a Bug</a>
+    <a href="https://github.com/acarlton5/ITGv2/issues">Report a Bug</a>
     ·
-    <a href="https://github.com/GRVYDEV/Project-Lightspeed/issues">Request Features</a>
+    <a href="https://github.com/acarlton5/ITGv2/issues">Request Features</a>
 </p>
 
 <!-- TABLE OF CONTENTS -->
@@ -125,7 +123,7 @@ In order to run Lightspeed, [Golang](https://golang.org/doc/install), [Rust](htt
 #### Clone Repository
 
 ```sh
-git clone https://github.com/GRVYDEV/Project-Lightspeed
+git clone https://github.com/acarlton5/ITGv2
 ```
 
 #### Build Ingest Server
@@ -166,7 +164,7 @@ Some of our awesome community members have written their own installers for Ligh
 
 **Note**: If you want to make a custom installer do so in the `/contrib` folder and submit a PR. Please make sure to include a README on how to use it!
 
-- [Ubuntu Installer](https://github.com/GRVYDEV/Project-Lightspeed/tree/main/contrib/ubuntu_installer)
+- [Ubuntu Installer](https://github.com/acarlton5/ITGv2/tree/main/contrib/ubuntu_installer)
 
 <!-- USAGE EXAMPLES -->
 
@@ -260,7 +258,7 @@ For development purposes you can choose to build the containers locally instead 
 in the docker-compose.yml
 
 ```
-git clone https://github.com/GRVYDEV/Project-Lightspeed
+git clone https://github.com/acarlton5/ITGv2
 ---
 ./Project-Lightspeed  # Monorepo Root
    frontend/
@@ -328,7 +326,7 @@ This project is still very much a work in progress and a lot of improvements wil
 If something is unclear or you are stuck there are two main ways you can get help.
 
 1. [Discord](https://discord.gg/UpQZANPYmZ) - this is the quickest and easiest way I will be able to help you through some deployment issues.
-2. [Create an Issue](https://github.com/GRVYDEV/Project-Lightspeed/issues) - this is another way you can bring attention to something that you want fixed. 
+2. [Create an Issue](https://github.com/acarlton5/ITGv2/issues) - this is another way you can bring attention to something that you want fixed. 
 
 <!-- ROADMAP -->
 
@@ -338,7 +336,7 @@ I will be fleshing out the roadmap in the coming days. As of right now I want to
 as close to other live streaming services as possible. If there are any features that you want to see then feel 
 free to suggest them!
 
-See the [open issues](https://github.com/GRVYDEV/Project-Lightspeed/issues) for a list of proposed features 
+See the [open issues](https://github.com/acarlton5/ITGv2/issues) for a list of proposed features 
 (and known issues).
 
 ## Bugs
@@ -371,7 +369,7 @@ Distributed under the MIT License. See `LICENSE` for more information.
 
 Garrett Graves - [@grvydev](https://twitter.com/grvydev)
 
-Project Link: [https://github.com/GRVYDEV/Project-Lightspeed](https://github.com/GRVYDEV/Project-Lightspeed)
+Project Link: [https://github.com/acarlton5/ITGv2](https://github.com/acarlton5/ITGv2)
 
 <!-- ACKNOWLEDGEMENTS -->
 
