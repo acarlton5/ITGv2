@@ -33,6 +33,9 @@ type Hub struct {
 
 	// lock to prevent write to closed channel
 	sync.RWMutex
+
+	// done is closed to signal the Run loop to exit
+	done chan struct{}
 }
 
 func NewHub() *Hub {
@@ -41,6 +44,7 @@ func NewHub() *Hub {
 		Broadcast:  make(chan []byte),
 		Register:   make(chan *Client, 1),
 		Unregister: make(chan *Client, 1),
+		done:       make(chan struct{}),
 	}
 }
 
@@ -79,6 +83,15 @@ func (h *Hub) Run() {
 				client.Send <- message
 			}
 			h.RUnlock()
+		case <-h.done:
+			h.Lock()
+			for client := range h.Clients {
+				client.conn.Close()
+				close(client.Send)
+				delete(h.Clients, client)
+			}
+			h.Unlock()
+			return
 		}
 	}
 }
@@ -102,5 +115,25 @@ func (h *Hub) SendInfo(info Info) {
 		h.Broadcast <- msg
 	} else {
 		log.Printf("could not marshal ws message: %s", err)
+	}
+}
+
+// Close signals the hub to stop processing events and shuts down all clients.
+func (h *Hub) Close() {
+	select {
+	case <-h.done:
+		return
+	default:
+		close(h.done)
+	}
+}
+
+// Closed reports whether Close has been called.
+func (h *Hub) Closed() bool {
+	select {
+	case <-h.done:
+		return true
+	default:
+		return false
 	}
 }

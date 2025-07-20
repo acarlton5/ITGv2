@@ -32,18 +32,18 @@ type Config struct {
 
 // Server wraps all state required for serving WebRTC streams.
 type Stream struct {
-        port       int
-        videoTrack *webrtc.TrackLocalStaticRTP
-        audioTrack *webrtc.TrackLocalStaticRTP
-        hub        *ws.Hub
-       conn       *net.UDPConn
+	port       int
+	videoTrack *webrtc.TrackLocalStaticRTP
+	audioTrack *webrtc.TrackLocalStaticRTP
+	hub        *ws.Hub
+	conn       *net.UDPConn
 }
 
 type Server struct {
-        cfg      Config
-        upgrader websocket.Upgrader
-        streams  map[int]*Stream
-        mu       sync.Mutex
+	cfg      Config
+	upgrader websocket.Upgrader
+	streams  map[int]*Stream
+	mu       sync.Mutex
 }
 
 // New creates a new server instance using the provided configuration.
@@ -83,37 +83,37 @@ func (s *Server) serveHTTP() {
 // random port is chosen. It responds with a JSON object containing the actual
 // port in use.
 func (s *Server) streamHandler(w http.ResponseWriter, r *http.Request) {
-       switch r.Method {
-       case http.MethodPost:
-               port := 0
-               if p := r.URL.Query().Get("port"); p != "" {
-                       if v, err := strconv.Atoi(p); err == nil {
-                               port = v
-                       }
-               }
+	switch r.Method {
+	case http.MethodPost:
+		port := 0
+		if p := r.URL.Query().Get("port"); p != "" {
+			if v, err := strconv.Atoi(p); err == nil {
+				port = v
+			}
+		}
 
-               st, err := s.createStream(port)
-               if err != nil {
-                       http.Error(w, err.Error(), http.StatusInternalServerError)
-                       return
-               }
-               _ = json.NewEncoder(w).Encode(map[string]int{"port": st.port})
-       case http.MethodDelete:
-               p := r.URL.Query().Get("port")
-               if p == "" {
-                       w.WriteHeader(http.StatusBadRequest)
-                       return
-               }
-               port, err := strconv.Atoi(p)
-               if err != nil {
-                       w.WriteHeader(http.StatusBadRequest)
-                       return
-               }
-               s.deleteStream(port)
-               w.WriteHeader(http.StatusNoContent)
-       default:
-               w.WriteHeader(http.StatusMethodNotAllowed)
-       }
+		st, err := s.createStream(port)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+		_ = json.NewEncoder(w).Encode(map[string]int{"port": st.port})
+	case http.MethodDelete:
+		p := r.URL.Query().Get("port")
+		if p == "" {
+			w.WriteHeader(http.StatusBadRequest)
+			return
+		}
+		port, err := strconv.Atoi(p)
+		if err != nil {
+			w.WriteHeader(http.StatusBadRequest)
+			return
+		}
+		s.deleteStream(port)
+		w.WriteHeader(http.StatusNoContent)
+	default:
+		w.WriteHeader(http.StatusMethodNotAllowed)
+	}
 }
 
 // websocketHandler negotiates a single WebRTC peer connection over websocket.
@@ -233,10 +233,10 @@ func (s *Server) websocketHandler(w http.ResponseWriter, r *http.Request) {
 // is 0, the system will choose an available one. The new Stream begins
 // consuming RTP immediately.
 func (s *Server) createStream(port int) (*Stream, error) {
-       l, err := net.ListenUDP("udp", &net.UDPAddr{IP: net.ParseIP(s.cfg.Addr), Port: port})
-       if err != nil {
-               return nil, err
-       }
+	l, err := net.ListenUDP("udp", &net.UDPAddr{IP: net.ParseIP(s.cfg.Addr), Port: port})
+	if err != nil {
+		return nil, err
+	}
 
 	v, err := webrtc.NewTrackLocalStaticRTP(
 		webrtc.RTPCodecCapability{MimeType: "video/H264"}, "video", "pion")
@@ -251,47 +251,48 @@ func (s *Server) createStream(port int) (*Stream, error) {
 		return nil, err
 	}
 
-       st := &Stream{port: l.LocalAddr().(*net.UDPAddr).Port, videoTrack: v, audioTrack: a, hub: ws.NewHub(), conn: l}
-       s.mu.Lock()
-       s.streams[st.port] = st
-       s.mu.Unlock()
+	st := &Stream{port: l.LocalAddr().(*net.UDPAddr).Port, videoTrack: v, audioTrack: a, hub: ws.NewHub(), conn: l}
+	s.mu.Lock()
+	s.streams[st.port] = st
+	s.mu.Unlock()
 
-       go st.hub.Run()
-       go func(stream *Stream) {
-               defer stream.conn.Close()
-               inbound := make([]byte, 4096)
-               for {
-                       n, _, err := stream.conn.ReadFrom(inbound)
-                       if err != nil {
-                               return
-                       }
-                       pkt := &rtp.Packet{}
-                       if err = pkt.Unmarshal(inbound[:n]); err != nil {
-                               continue
-                       }
-                       switch pkt.Header.PayloadType {
-                       case 96:
-                               _, _ = stream.videoTrack.Write(inbound[:n])
-                       case 97:
-                               _, _ = stream.audioTrack.Write(inbound[:n])
-                       }
-               }
-       }(st)
+	go st.hub.Run()
+	go func(stream *Stream) {
+		defer stream.conn.Close()
+		inbound := make([]byte, 4096)
+		for {
+			n, _, err := stream.conn.ReadFrom(inbound)
+			if err != nil {
+				return
+			}
+			pkt := &rtp.Packet{}
+			if err = pkt.Unmarshal(inbound[:n]); err != nil {
+				continue
+			}
+			switch pkt.Header.PayloadType {
+			case 96:
+				_, _ = stream.videoTrack.Write(inbound[:n])
+			case 97:
+				_, _ = stream.audioTrack.Write(inbound[:n])
+			}
+		}
+	}(st)
 
-       return st, nil
+	return st, nil
 }
 
 // deleteStream closes and removes the stream associated with the UDP port.
 func (s *Server) deleteStream(port int) {
-       s.mu.Lock()
-       st, ok := s.streams[port]
-       if ok {
-               delete(s.streams, port)
-       }
-       s.mu.Unlock()
-       if ok {
-               st.conn.Close()
-       }
+	s.mu.Lock()
+	st, ok := s.streams[port]
+	if ok {
+		delete(s.streams, port)
+	}
+	s.mu.Unlock()
+	if ok {
+		st.conn.Close()
+		st.hub.Close()
+	}
 }
 
 // createAPI configures the Pion API based on server options.
