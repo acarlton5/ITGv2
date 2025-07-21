@@ -4,13 +4,13 @@ WORKDIR /go/src/app
 COPY . .
 ENV GO111MODULE=on
 RUN go mod download
-RUN go build -o lightspeed-webrtc .
+RUN go build -o itg-webrtc .
 
 
 FROM debian:buster-slim
-COPY --from=builder /go/src/app/lightspeed-webrtc /usr/local/bin/
+COPY --from=builder /go/src/app/itg-webrtc /usr/local/bin/
 EXPOSE 8080
 
-#CMD ["lightspeed-webrtc --addr=XXX.XXX.XXX.XXX", "run"]
+#CMD ["itg-webrtc --addr=XXX.XXX.XXX.XXX", "run"]
 # defaults to localhost:8080, then up to docker compose to bind ports
-CMD ["lightspeed-webrtc", "--addr=localhost"]
+CMD ["itg-webrtc", "--addr=localhost"]

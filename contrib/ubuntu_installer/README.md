@@ -1,11 +1,11 @@
-# Project Lightspeed Ubuntu 20.04 installer
+# Project ITG Ubuntu 20.04 installer
 
 > **Warning**
-> This script is designed for use on a **fresh install**. Please backup any existing configurations as some **will be overwritten** to install Lightspeed.
-> If you would like an alternate solution that does not require a fresh installation, please consult the [official wiki](https://github.com/GRVYDEV/Project-Lightspeed/README.md) for a docker based setup guide.
+> This script is designed for use on a **fresh install**. Please backup any existing configurations as some **will be overwritten** to install ITG.
+> If you would like an alternate solution that does not require a fresh installation, please consult the [official wiki](https://github.com/GRVYDEV/Project-ITG/README.md) for a docker based setup guide.
 
 Contained in this directory is a bash script to automatically install
-[GRVYDEV/Project-Lightspeed](https://github.com/GRVYDEV/Project-Lightspeed) on
+[GRVYDEV/Project-ITG](https://github.com/GRVYDEV/Project-ITG) on
 Ubuntu 20.04, compiled directly from source repositories, and install systemd
 services to run them. This installation method does not use Docker.
 
@@ -41,7 +41,7 @@ Example without TLS (no config necessary):
 ```bash
 #!/bin/bash
 
-curl -L https://raw.githubusercontent.com/GRVYDEV/Project-Lightspeed/main/contrib/ubuntu_installer/ubuntu_installer.sh | sudo -E bash -xe
+curl -L https://raw.githubusercontent.com/GRVYDEV/Project-ITG/main/contrib/ubuntu_installer/ubuntu_installer.sh | sudo -E bash -xe
 ```
 
 Example with TLS (config is set as env vars):
@@ -53,22 +53,22 @@ export TLS_ON=true
 export DOMAIN=stream.example.com
 export ACME_EMAIL=email@example.com
 
-curl -L https://raw.githubusercontent.com/GRVYDEV/Project-Lightspeed/main/contrib/ubuntu_installer/ubuntu_installer.sh | sudo -E bash -xe
+curl -L https://raw.githubusercontent.com/GRVYDEV/Project-ITG/main/contrib/ubuntu_installer/ubuntu_installer.sh | sudo -E bash -xe
 ```
 
 ## Get your stream key
 
 Once the script finishes, these new services will have been created:
 
- * `lightspeed-ingest`
- * `lightspeed-webrtc`
+ * `itg-ingest`
+ * `itg-webrtc`
  * `nginx`
  
 In order to start streaming, you need the stream key, which is printed in the
-log for the `lightspeed-ingest` service. You can view the log this way:
+log for the `itg-ingest` service. You can view the log this way:
 
 ```bash
-journalctl --unit lightspeed-ingest.service --no-pager
+journalctl --unit itg-ingest.service --no-pager
 ```
 
 ## Run with cloud-init

@@ -1,4 +1,4 @@
-name: Lightspeed Ingest
+name: ITG Ingest
 version: "0.1.0"
 author: "Garrett Graves <gravesg57@gmail.com>"
 about: "A FTL handshake server written in Rust"

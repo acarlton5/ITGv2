@@ -3,7 +3,7 @@ import App from './App';
 import RTCProvider from './context/RTCPeerContext';
 import SocketProvider from './context/SocketContext';
 
-test('renders Project Lightspeed header', () => {
+test('renders Project ITG header', () => {
   render(
     <RTCProvider>
       <SocketProvider>
@@ -11,6 +11,6 @@ test('renders Project Lightspeed header', () => {
       </SocketProvider>
     </RTCProvider>
   );
-  const headers = screen.getAllByText(/Project Lightspeed/i);
+  const headers = screen.getAllByText(/Project ITG/i);
   expect(headers.length).toBeGreaterThan(0);
 });

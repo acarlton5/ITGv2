@@ -7,7 +7,7 @@ import (
 	"flag"
 	"log"
 
-	"github.com/GRVYDEV/lightspeed-webrtc/server"
+	"github.com/GRVYDEV/itg-webrtc/server"
 )
 
 func main() {

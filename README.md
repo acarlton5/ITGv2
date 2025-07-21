@@ -1,9 +1,9 @@
 <p align="center">
 <a  href="https://github.com/acarlton5/ITGv2">
-    <img src="images/lightspeedlogo.svg" alt="Logo" width="150" height="150">
+    <img src="images/itglogo.svg" alt="Logo" width="150" height="150">
 </a>
 </p>
-  <h1 align="center">Project Lightspeed</h1>
+  <h1 align="center">Project ITG</h1>
 <div align="center">
     <a href="https://github.com/acarlton5/ITGv2/stargazers"><img src="https://img.shields.io/github/stars/acarlton5/ITGv2" alt="Stars Badge"/></a>
     <a href="https://github.com/acarlton5/ITGv2/network/members"><img src="https://img.shields.io/github/forks/acarlton5/ITGv2" alt="Forks Badge"/></a>
@@ -46,9 +46,9 @@
         <li><a href="#prerequisites">Prerequisites</a></li>
         <li><a href="#installation">Installation</a>
             <ul>
-                <li><a href="#lightspeed-ingest">Lightspeed Ingest</a></li>
-                <li><a href="#lightspeed-webrtc">Lightspeed WebRTC</a></li>
-                <li><a href="#lightspeed-react">Lightspeed React</a></li>
+                <li><a href="#itg-ingest">ITG Ingest</a></li>
+                <li><a href="#itg-webrtc">ITG WebRTC</a></li>
+                <li><a href="#itg-react">ITG React</a></li>
             </ul>
         </li>
         <li><a href="#community-installation">Community Installation</a></li>
@@ -76,20 +76,20 @@
 
 <!-- [![Product Name Screen Shot][product-screenshot]](https://example.com) -->
 
-Project Lightspeed is a fully self-contained live streaming server. With Lightspeed you will be able to deploy your 
-own sub-second latency live streaming platform. The Lightspeed repository contains the instructions for installing 
-and deploying the entire application. So far, Lightspeed includes an ingest service, broadcast service via webRTC 
-and a web application for viewing. Lightspeed is however completely modular. What this means is that you can write 
+Project ITG is a fully self-contained live streaming server. With ITG you will be able to deploy your 
+own sub-second latency live streaming platform. The ITG repository contains the instructions for installing 
+and deploying the entire application. So far, ITG includes an ingest service, broadcast service via webRTC 
+and a web application for viewing. ITG is however completely modular. What this means is that you can write 
 your own web app, ingest server or broadcast server. 
 
 ### How It Works
 
-Lightspeed Ingest listens on port 8084 which is the port used by the FTL protocol. Upon receiving a connection it completes the FTL handshake and negotiates a port (this is currently bugged however and defaults to 65535). Once the negotiation is done Lightspeed WebRTC listens on the negotiated port (in the future Lightspeed WebRTC will listen on the loopback interface so the ingest has more control on what packets we accept) and relays the incoming RTP packets over WebRTC. Lightspeed React communicates via websocket with Lightspeed WebRTC to exchange ICE Candidates and once a connection is established the video can be viewed
+ITG Ingest listens on port 8084 which is the port used by the FTL protocol. Upon receiving a connection it completes the FTL handshake and negotiates a port (this is currently bugged however and defaults to 65535). Once the negotiation is done ITG WebRTC listens on the negotiated port (in the future ITG WebRTC will listen on the loopback interface so the ingest has more control on what packets we accept) and relays the incoming RTP packets over WebRTC. ITG React communicates via websocket with ITG WebRTC to exchange ICE Candidates and once a connection is established the video can be viewed
 
 ### Diagram
 Here is a diagram that outlines the current implementation and the future implementation that I would like to achieve. The reason I want the packets relayed from Ingest to WebRTC on the loopback interface is so that we have more control over who can send packets. Meaning that when a DISCONNECT command is recieved we can terminate the UDP listener so that someone could not start sending packets that we do not want
 
-<img src="images/Lightspeed-Diagram.jpeg" alt="Lightspeed Diagram">
+<img src="images/ITG-Diagram.jpeg" alt="ITG Diagram">
 
 ### Built With
 
@@ -99,9 +99,9 @@ Here is a diagram that outlines the current implementation and the future implem
 
 ### Components
 
-- [Lightspeed Ingest]
-- [Lightspeed WebRTC]
-- [Lightspeed React]
+- [ITG Ingest]
+- [ITG WebRTC]
+- [ITG React]
 
 ## Discord
 We now have a [Discord](https://discord.gg/UpQZANPYmZ) server! This is a great way to stay up to date with the project and join in on the conversation! Come stop by!
@@ -115,7 +115,7 @@ each repo however I will include them here for the sake of simplicity
 
 ### Prerequisites
 
-In order to run Lightspeed, [Golang](https://golang.org/doc/install),
+In order to run ITG, [Golang](https://golang.org/doc/install),
 [Rust](https://www.rust-lang.org/tools/install), and
 [npm](https://www.npmjs.com/get-npm) are required. Additionally the Rust repo
 requires a C compiler. If you get a `linker cc not found` error then you need to
@@ -160,21 +160,21 @@ install a C compiler
 
 ## Usage
 
-#### Lightspeed Ingest
+#### ITG Ingest
 
 ```sh
 cd ingest
 cargo run --release
 ```
 
-#### Lightspeed WebRTC
+#### ITG WebRTC
 
 Using git
 
 ```sh
 cd webrtc
 go build
-./lightspeed-webrtc --addr=XXX.XXX.XXX.XXX
+./itg-webrtc --addr=XXX.XXX.XXX.XXX
 ```
 
 ##### Arguments
@@ -185,15 +185,15 @@ go build
 |  `--ip`    | A valid IP address | `none` | Sets the public IP address for WebRTC to use. |
 | `--ports`  | A valid UDP port range | `20000-20500` | This sets the UDP ports that WebRTC will use to connect with the client |
 | `--ws-port` | A valid port number | `8080` | This is the port on which the websocket will be hosted. If you change this value make sure that is reflected in the URL used by the react client |
-| `--rtp-port` | A valid port number | `65535` | This is the port on which the WebRTC service will listen for RTP packets. Ensure this is the same port that Lightspeed Ingest is negotiating with the client |
+| `--rtp-port` | A valid port number | `65535` | This is the port on which the WebRTC service will listen for RTP packets. Ensure this is the same port that ITG Ingest is negotiating with the client |
 | `--ice-servers` | A comma separated list of hosts | `none` | List of ICE / STUN servers used by WebRTC for setting up the network connection with the clients |
 
-#### Lightspeed React
+#### ITG React
 
 You should then configure the websocket URL in `config.json` in the `build` directory. If you are using an IP then it will be the 
 public IP of your machine if you have DNS then it will be your hostname
 
-**Note**: The websocket port is hardcoded meaning that Lightspeed-webrtc will always serve it on port 8080 (this may change in the future) 
+**Note**: The websocket port is hardcoded meaning that ITG-webrtc will always serve it on port 8080 (this may change in the future) 
 so for the websocket config it needs to be `ws://IP_or_Hostname:8080/websocket`
 
 You can host the static site locally using `serve` which can be found [here](https://www.npmjs.com/package/serve)
@@ -208,7 +208,7 @@ serve -s build -l 80
 
 The above will serve the build folder on port 80
 
-View Lightspeed in your web browser by visiting http://hostname or http://your.ip.address.here
+View ITG in your web browser by visiting http://hostname or http://your.ip.address.here
 
 ---
 
@@ -219,9 +219,9 @@ your `services.json` file. It can be found at:
 - Windows: `%AppData%\obs-studio\plugin_config\rtmp-services\services.json` 
 - OSX: `/Users/YOURUSERNAME/Library/Application\ Support/obs-studio/plugin_config/rtmp-services/services.json`
 
-**Note**: Not all versions of Linux have access to OBS with the FTL SDK built in. If you are on Linux and you cannot stream to Lightspeed this may be the issue
+**Note**: Not all versions of Linux have access to OBS with the FTL SDK built in. If you are on Linux and you cannot stream to ITG this may be the issue
 
-Paste the below into the services array and change the url to either the IP or the hostname of your Project Lightspeed server
+Paste the below into the services array and change the url to either the IP or the hostname of your Project ITG server
 
 **Note**: for the url it is not prefaced by anything. For example, given an IP of 10.0.0.2 you would put `"url": "10.0.0.2"` You do not need to indicate a port since the FTL protocol always uses 8084
 ```json

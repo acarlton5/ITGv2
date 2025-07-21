@@ -15,7 +15,7 @@ import (
 	"github.com/pion/rtp"
 	"github.com/pion/webrtc/v3"
 
-	"github.com/GRVYDEV/lightspeed-webrtc/ws"
+	"github.com/GRVYDEV/itg-webrtc/ws"
 )
 
 // Config stores runtime options for the WebRTC server.

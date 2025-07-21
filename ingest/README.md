@@ -1,30 +1,30 @@
 <p align="center">
-<a  href="https://github.com/GRVYDEV/Lightspeed-ingest">
-    <img src="images/lightspeedlogo.svg" alt="Logo" width="150" height="150">
+<a  href="https://github.com/GRVYDEV/ITG-ingest">
+    <img src="images/itglogo.svg" alt="Logo" width="150" height="150">
 </a>
 </p>
-  <h1 align="center">Project Lightspeed Ingest</h1>
+  <h1 align="center">Project ITG Ingest</h1>
 <div align="center">
-  <a href="https://github.com/GRVYDEV/Lightspeed-ingest/stargazers"><img src="https://img.shields.io/github/stars/GRVYDEV/Lightspeed-ingest" alt="Stars Badge"/></a>
-<a href="https://github.com/GRVYDEV/Lightspeed-ingest/network/members"><img src="https://img.shields.io/github/forks/GRVYDEV/Lightspeed-ingest" alt="Forks Badge"/></a>
-<a href="https://github.com/GRVYDEV/Lightspeed-ingest/pulls"><img src="https://img.shields.io/github/issues-pr/GRVYDEV/Lightspeed-ingest" alt="Pull Requests Badge"/></a>
-<a href="https://github.com/GRVYDEV/Lightspeed-ingest/issues"><img src="https://img.shields.io/github/issues/GRVYDEV/Lightspeed-ingest" alt="Issues Badge"/></a>
-<a href="https://github.com/GRVYDEV/Lightspeed-ingest/graphs/contributors"><img alt="GitHub contributors" src="https://img.shields.io/github/contributors/GRVYDEV/Lightspeed-ingest?color=2b9348"></a>
-<a href="https://github.com/GRVYDEV/Lightspeed-ingest/blob/master/LICENSE"><img src="https://img.shields.io/github/license/GRVYDEV/Lightspeed-ingest?color=2b9348" alt="License Badge"/></a>
+  <a href="https://github.com/GRVYDEV/ITG-ingest/stargazers"><img src="https://img.shields.io/github/stars/GRVYDEV/ITG-ingest" alt="Stars Badge"/></a>
+<a href="https://github.com/GRVYDEV/ITG-ingest/network/members"><img src="https://img.shields.io/github/forks/GRVYDEV/ITG-ingest" alt="Forks Badge"/></a>
+<a href="https://github.com/GRVYDEV/ITG-ingest/pulls"><img src="https://img.shields.io/github/issues-pr/GRVYDEV/ITG-ingest" alt="Pull Requests Badge"/></a>
+<a href="https://github.com/GRVYDEV/ITG-ingest/issues"><img src="https://img.shields.io/github/issues/GRVYDEV/ITG-ingest" alt="Issues Badge"/></a>
+<a href="https://github.com/GRVYDEV/ITG-ingest/graphs/contributors"><img alt="GitHub contributors" src="https://img.shields.io/github/contributors/GRVYDEV/ITG-ingest?color=2b9348"></a>
+<a href="https://github.com/GRVYDEV/ITG-ingest/blob/master/LICENSE"><img src="https://img.shields.io/github/license/GRVYDEV/ITG-ingest?color=2b9348" alt="License Badge"/></a>
 </div>
 <br />
 <p align="center">
   <p align="center">
     A FTL handshake server written in Rust. This server listens on port 8084 and performs the FTL handshake with incoming connections
     <!-- <br /> -->
-    <!-- <a href="https://github.com/GRVYDEV/Lightspeed-ingest"><strong>Explore the docs »</strong></a> -->
+    <!-- <a href="https://github.com/GRVYDEV/ITG-ingest"><strong>Explore the docs »</strong></a> -->
     <br />
     <br />
     <a href="https://youtu.be/Dzin4_A8RDs">View Demo</a>
     ·
-    <a href="https://github.com/GRVYDEV/Lightspeed-ingest/issues">Report Bug</a>
+    <a href="https://github.com/GRVYDEV/ITG-ingest/issues">Report Bug</a>
     ·
-    <a href="https://github.com/GRVYDEV/Lightspeed-ingest/issues">Request Feature</a>
+    <a href="https://github.com/GRVYDEV/ITG-ingest/issues">Request Feature</a>
   </p>
 </p>
 
@@ -61,7 +61,7 @@
 
 <!-- [![Product Name Screen Shot][product-screenshot]](https://example.com) -->
 
-This is one of three components required for Project Lightspeed. Project Lightspeed is a fully self contained live streaming server. With this you will be able to deploy your own sub-second latency live streaming platform. This particular repository performs the FTL handshake with clients. It verifies the stream key and negotiates a port with the client connection that we will accept RTP packets on. In order for this to work the Project Lightspeed WebRTC is required in order to accept and broadcast the RTP packets. In order to view the live stream the Project Lightspeed React is required.
+This is one of three components required for Project ITG. Project ITG is a fully self contained live streaming server. With this you will be able to deploy your own sub-second latency live streaming platform. This particular repository performs the FTL handshake with clients. It verifies the stream key and negotiates a port with the client connection that we will accept RTP packets on. In order for this to work the Project ITG WebRTC is required in order to accept and broadcast the RTP packets. In order to view the live stream the Project ITG React is required.
 
 ### Built With
 
@@ -69,8 +69,8 @@ This is one of three components required for Project Lightspeed. Project Lightsp
 
 ### Dependencies
 
-- [Lightspeed WebRTC](https://github.com/GRVYDEV/Lightspeed-webrtc)
-- [Lightspeed React](https://github.com/GRVYDEV/Lightspeed-react)
+- [ITG WebRTC](https://github.com/GRVYDEV/ITG-webrtc)
+- [ITG React](https://github.com/GRVYDEV/ITG-react)
 
 <!-- GETTING STARTED -->
 
@@ -85,8 +85,8 @@ In order to run this Rust is required. Installation instructions can be found <a
 ### Installation
 
 ```sh
-git clone https://github.com/GRVYDEV/Lightspeed-ingest.git
-cd Lightspeed-ingest
+git clone https://github.com/GRVYDEV/ITG-ingest.git
+cd ITG-ingest
 cargo build
 ```
 
@@ -118,15 +118,15 @@ cargo run --release -- -a 12.34.56.78
 
 By default since we are using the FTL protocol you cannot just use a custom server. You will need to edit your `services.json` file. It can be found at `%AppData%\obs-studio\plugin_config\rtmp-services\services.json` on Windows and `/Users/YOURUSERNAME/Library/Application\ Support/obs-studio/plugin_config/rtmp-services/services.json`
 
-Paste this into the services array and change the url to either the IP or the hostname of your Project Lightspeed server
+Paste this into the services array and change the url to either the IP or the hostname of your Project ITG server
 ```json
 {
-    "name": "Project Lightspeed",
+    "name": "Project ITG",
     "common": false,
     "servers": [
         {
             "name": "SERVER NAME HERE",
-            "url": "your.lightspeed.hostname"
+            "url": "your.itg.hostname"
         }
     ],
     "recommended": {
@@ -150,7 +150,7 @@ After restarting OBS you should be able to see your service in the OBS settings 
 
 ## Roadmap
 
-See the [open issues](https://github.com/GRVYDEV/Lightspeed-ingest/issues) for a list of proposed features (and known issues).
+See the [open issues](https://github.com/GRVYDEV/ITG-ingest/issues) for a list of proposed features (and known issues).
 
 <!-- CONTRIBUTING -->
 
@@ -176,7 +176,7 @@ Distributed under the MIT License. See `LICENSE` for more information.
 
 Garrett Graves - [@grvydev](https://twitter.com/grvydev)
 
-Project Link: [https://github.com/GRVYDEV/Lightspeed-ingest](https://github.com/GRVYDEV/Lightspeed-ingest)
+Project Link: [https://github.com/GRVYDEV/ITG-ingest](https://github.com/GRVYDEV/ITG-ingest)
 
 <!-- ACKNOWLEDGEMENTS -->
 

@@ -4,13 +4,13 @@ COPY . .
 RUN cargo install --path .
 
 
-FROM debian:buster-slim as lightspeed-ingest
-RUN useradd -M -s /bin/bash lightspeed
+FROM debian:buster-slim as itg-ingest
+RUN useradd -M -s /bin/bash itg
 WORKDIR /data
-RUN chown lightspeed:root /data
-COPY --from=builder --chown=lightspeed:lightspeed /usr/local/cargo/bin/lightspeed-ingest /usr/local/bin/lightspeed-ingest
+RUN chown itg:root /data
+COPY --from=builder --chown=itg:itg /usr/local/cargo/bin/itg-ingest /usr/local/bin/itg-ingest
 
-USER lightspeed
-CMD ["lightspeed-ingest"]
+USER itg
+CMD ["itg-ingest"]
 
 EXPOSE 8084

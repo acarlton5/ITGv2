@@ -1,11 +1,11 @@
 #!/bin/bash -ex
 
-## This is a bash script to install GRVYDEV/Project-Lightspeed on Ubuntu 20.04
+## This is a bash script to install GRVYDEV/Project-ITG on Ubuntu 20.04
 ## See the README for details:
-## https://github.com/GRVYDEV/Project-Lightspeed/tree/main/contrib/ubuntu_installer
+## https://github.com/GRVYDEV/Project-ITG/tree/main/contrib/ubuntu_installer
 
 
-lightspeed_config() {
+itg_config() {
     ## You can edit these defaults, or you can override them in your environment.
     ## Environment vars use the same names except without the DEFAULT_ prefix.
 
@@ -23,9 +23,9 @@ lightspeed_config() {
     DEFAULT_IP_ADDRESS=$(curl ifconfig.co/)
 
     # Git repositories:
-    DEFAULT_INGEST_REPO=https://github.com/GRVYDEV/Lightspeed-ingest.git
-    DEFAULT_WEBRTC_REPO=https://github.com/GRVYDEV/Lightspeed-webrtc.git
-    DEFAULT_REACT_REPO=https://github.com/GRVYDEV/Lightspeed-react.git
+    DEFAULT_INGEST_REPO=https://github.com/GRVYDEV/ITG-ingest.git
+    DEFAULT_WEBRTC_REPO=https://github.com/GRVYDEV/ITG-webrtc.git
+    DEFAULT_REACT_REPO=https://github.com/GRVYDEV/ITG-react.git
 
     # Git branch, tag, or commit to compile (default is HEAD from mainline branch):
     DEFAULT_INGEST_GIT_REF=main
@@ -36,7 +36,7 @@ lightspeed_config() {
     DEFAULT_GIT_ROOT=/root/git
 }
 
-lightspeed_install() {
+itg_install() {
     ## Load environment variables that possibly override default values:
     # (env vars are the same names as above, except without `DEFAULT_` prefix)
     TLS_ON=${TLS_ON:-$DEFAULT_TLS_ON}
@@ -88,28 +88,28 @@ lightspeed_install() {
     ## Niceties:
     echo "set enable-bracketed-paste on" >> /root/.inputrc
 
-    ## Install Project Lightspeed from source:
+    ## Install Project ITG from source:
     # ingest:
     mkdir -p ${GIT_ROOT}
     cd ${GIT_ROOT}
-    git clone ${INGEST_REPO} Lightspeed-ingest
-    cd Lightspeed-ingest
+    git clone ${INGEST_REPO} ITG-ingest
+    cd ITG-ingest
     git checkout ${INGEST_GIT_REF}
     cargo build --release
-    install target/release/lightspeed-ingest /usr/local/bin/lightspeed-ingest
+    install target/release/itg-ingest /usr/local/bin/itg-ingest
 
     # webrtc:
     cd ${GIT_ROOT}
-    git clone ${WEBRTC_REPO} Lightspeed-webrtc
-    cd Lightspeed-webrtc
+    git clone ${WEBRTC_REPO} ITG-webrtc
+    cd ITG-webrtc
     git checkout ${WEBRTC_GIT_REF}
     GO111MODULE=on go build
-    install lightspeed-webrtc /usr/local/bin/lightspeed-webrtc
+    install itg-webrtc /usr/local/bin/itg-webrtc
 
     # react:
     cd ${GIT_ROOT}
-    git clone ${REACT_REPO} Lightspeed-react
-    cd Lightspeed-react
+    git clone ${REACT_REPO} ITG-react
+    cd ITG-react
     git checkout ${REACT_GIT_REF}
     npm install
     npm run build
@@ -123,15 +123,15 @@ EOF
 
     ## Create systemd service for ingest:
 
-    cat <<EOF > /etc/systemd/system/lightspeed-ingest.service
+    cat <<EOF > /etc/systemd/system/itg-ingest.service
 [Unit]
-Description=Project Lightspeed ingest service
+Description=Project ITG ingest service
 After=network-online.target
 Wants=network-online.target
 [Service]
 TimeoutStartSec=0
 Environment=LS_INGEST_ADDR=${IP_ADDRESS}
-ExecStart=/usr/local/bin/lightspeed-ingest
+ExecStart=/usr/local/bin/itg-ingest
 Restart=always
 RestartSec=60
 
@@ -141,15 +141,15 @@ EOF
 
     ## Create systemd service for webrtc:
 
-    cat <<EOF | sed 's/@@@/$/g' > /etc/systemd/system/lightspeed-webrtc.service
+    cat <<EOF | sed 's/@@@/$/g' > /etc/systemd/system/itg-webrtc.service
 [Unit]
-Description=Project Lightspeed webrtc service
+Description=Project ITG webrtc service
 After=network-online.target
 Wants=network-online.target
 [Service]
 TimeoutStartSec=0
 Environment=IP_ADDRESS=${WEBRTC_IP_ADDRESS}
-ExecStart=/usr/local/bin/lightspeed-webrtc --addr=@@@{IP_ADDRESS}
+ExecStart=/usr/local/bin/itg-webrtc --addr=@@@{IP_ADDRESS}
 Restart=always
 RestartSec=60
 
@@ -160,8 +160,8 @@ EOF
     ## Install and start services:
 
     systemctl daemon-reload
-    systemctl enable --now lightspeed-ingest
-    systemctl enable --now lightspeed-webrtc
+    systemctl enable --now itg-ingest
+    systemctl enable --now itg-webrtc
 
     ## Configure TLS with certbot:
 
@@ -211,8 +211,8 @@ EOF
 }
 
 ## Configure and install:
-lightspeed_config
-lightspeed_install
+itg_config
+itg_install
 
 
 ## END
