@@ -121,6 +121,7 @@ In order to run Lightspeed, [Golang](https://golang.org/doc/install),
 requires a C compiler. If you get a `linker cc not found` error then you need to
 install a C compiler
 
+
 ### Installation
 
 1. **Clone Repository**
@@ -152,14 +153,6 @@ install a C compiler
    cd frontend
    npm install
    ```
-
-### Community Installation (**Warning: Outdated. Uses deprecated repositories**)
-Some of our awesome community members have written their own installers for Lightspeed
-Here are links to those!
-
-**Note**: If you want to make a custom installer do so in the `/contrib` folder and submit a PR. Please make sure to include a README on how to use it!
-
-- [Ubuntu Installer](https://github.com/acarlton5/ITGv2/tree/main/contrib/ubuntu_installer)
 
 <!-- USAGE EXAMPLES -->
 
@@ -258,12 +251,6 @@ After restarting OBS you should be able to see your service in the OBS settings 
 ---
 
 ### Stream Key
-
-We are no longer using a default streamkey! If you are still using one please pull from master on the Lightspeed-ingest 
-repository. Now, by default on first time startup a new streamkey will be generated and output to the terminal for you. 
-In order to regenerate this key simply delete the file it generates called `hash`. 
-Simply copy the key output in the terminal to OBS and you are all set! 
-This key WILL NOT change unless the `hash` file is deleted
 
 <img src="images/streamkey-example.png" alt="Streamkey example">
 
