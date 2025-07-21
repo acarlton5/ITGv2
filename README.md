@@ -121,6 +121,7 @@ In order to run Lightspeed, [Golang](https://golang.org/doc/install),
 requires a C compiler. If you get a `linker cc not found` error then you need to
 install a C compiler
 
+
 ### Installation
 
 1. **Clone Repository**
@@ -129,6 +130,7 @@ install a C compiler
    git clone https://github.com/acarlton5/ITGv2
    cd ITGv2
    ```
+
 
 2. **Build Ingest Server**
 
@@ -147,19 +149,12 @@ install a C compiler
    ```
 
 4. **Build Frontend**
-
+  
    ```sh
    cd frontend
    npm install
    ```
 
-### Community Installation (**Warning: Outdated. Uses deprecated repositories**)
-Some of our awesome community members have written their own installers for Lightspeed
-Here are links to those!
-
-**Note**: If you want to make a custom installer do so in the `/contrib` folder and submit a PR. Please make sure to include a README on how to use it!
-
-- [Ubuntu Installer](https://github.com/acarlton5/ITGv2/tree/main/contrib/ubuntu_installer)
 
 <!-- USAGE EXAMPLES -->
 
@@ -258,7 +253,6 @@ After restarting OBS you should be able to see your service in the OBS settings 
 ---
 
 ### Stream Key
-
 Stream keys are now managed through your **NOIZ dashboard** and validated by a
 separate authentication service. Log in to your NOIZ account and create a stream
 to obtain the key. Enter this key into OBS when configuring your stream. You can
