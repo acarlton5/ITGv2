@@ -124,6 +124,8 @@ First build the frontend
 
 ```sh
 cd ITG-react
+# If the build fails with an OpenSSL error (common on Node 17+)
+export NODE_OPTIONS=--openssl-legacy-provider
 npm run build
 ```
 
