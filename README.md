@@ -202,6 +202,8 @@ You can host the static site locally using `serve` which can be found [here](htt
 ```sh
 cd frontend
 npm install
+# If the build fails with an OpenSSL error (common on Node 17+)
+export NODE_OPTIONS=--openssl-legacy-provider
 npm run build
 serve -s build -l 80
 ```
