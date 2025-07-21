@@ -137,7 +137,7 @@ install a C compiler
    ```sh
    cd ingest
    cargo build
-   cd .
+   cd ..
    ```
 
 3. **Build WebRTC Server**
@@ -145,7 +145,7 @@ install a C compiler
    ```sh
    cd webrtc
    go build
-   cd .
+   cd ..
    ```
 
 4. **Build Frontend**
