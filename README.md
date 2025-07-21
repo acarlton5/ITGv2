@@ -131,6 +131,7 @@ install a C compiler
    cd ITGv2
    ```
 
+
 2. **Build Ingest Server**
 
    ```sh
@@ -148,11 +149,12 @@ install a C compiler
    ```
 
 4. **Build Frontend**
-
+  
    ```sh
    cd frontend
    npm install
    ```
+
 
 <!-- USAGE EXAMPLES -->
 
@@ -251,8 +253,10 @@ After restarting OBS you should be able to see your service in the OBS settings 
 ---
 
 ### Stream Key
-
-<img src="images/streamkey-example.png" alt="Streamkey example">
+Stream keys are now managed through your **NOIZ dashboard** and validated by a
+separate authentication service. Log in to your NOIZ account and create a stream
+to obtain the key. Enter this key into OBS when configuring your stream. You can
+revoke or regenerate keys at any time from the dashboard.
 
 ### Multi-User Streaming
 
