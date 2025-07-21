@@ -745,6 +745,29 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "469fb0b9cefa57e3ef31275ee7cacb78f2fdca44e4765491884a2b119d4eb130"
 
 [[package]]
+name = "itg-ingest"
+version = "0.1.0"
+dependencies = [
+ "bytes",
+ "clap",
+ "futures",
+ "futures-util",
+ "hex",
+ "log",
+ "rand 0.8.1",
+ "regex",
+ "reqwest",
+ "rtp-rs",
+ "serde",
+ "serde_json",
+ "simplelog",
+ "tokio",
+ "tokio-tungstenite",
+ "tokio-util 0.6.1",
+ "url",
+]
+
+[[package]]
 name = "itoa"
 version = "1.0.15"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -770,29 +793,6 @@ name = "libc"
 version = "0.2.174"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "1171693293099992e19cddea4e8b849964e9846f4acee11b3948bcc337be8776"
-
-[[package]]
-name = "lightspeed-ingest"
-version = "0.1.0"
-dependencies = [
- "bytes",
- "clap",
- "futures",
- "futures-util",
- "hex",
- "log",
- "rand 0.8.1",
- "regex",
- "reqwest",
- "rtp-rs",
- "serde",
- "serde_json",
- "simplelog",
- "tokio",
- "tokio-tungstenite",
- "tokio-util 0.6.1",
- "url",
-]
 
 [[package]]
 name = "linux-raw-sys"

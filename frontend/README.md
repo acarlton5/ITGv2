@@ -1,30 +1,30 @@
 <p align="center">
-<a  href="https://github.com/GRVYDEV/Lightspeed-react">
-    <img src="images/lightspeedlogo.svg" alt="Logo" width="150" height="150">
+<a  href="https://github.com/GRVYDEV/ITG-react">
+    <img src="images/itglogo.svg" alt="Logo" width="150" height="150">
 </a>
 </p>
-  <h1 align="center">Project Lightspeed React</h1>
+  <h1 align="center">Project ITG React</h1>
 <div align="center">
-  <a href="https://github.com/GRVYDEV/Lightspeed-react/stargazers"><img src="https://img.shields.io/github/stars/GRVYDEV/Lightspeed-react" alt="Stars Badge"/></a>
-<a href="https://github.com/GRVYDEV/Lightspeed-react/network/members"><img src="https://img.shields.io/github/forks/GRVYDEV/Lightspeed-react" alt="Forks Badge"/></a>
-<a href="https://github.com/GRVYDEV/Lightspeed-react/pulls"><img src="https://img.shields.io/github/issues-pr/GRVYDEV/Lightspeed-react" alt="Pull Requests Badge"/></a>
-<a href="https://github.com/GRVYDEV/Lightspeed-react/issues"><img src="https://img.shields.io/github/issues/GRVYDEV/Lightspeed-react" alt="Issues Badge"/></a>
-<a href="https://github.com/GRVYDEV/Lightspeed-react/graphs/contributors"><img alt="GitHub contributors" src="https://img.shields.io/github/contributors/GRVYDEV/Lightspeed-react?color=2b9348"></a>
-<a href="https://github.com/GRVYDEV/Lightspeed-react/blob/master/LICENSE"><img src="https://img.shields.io/github/license/GRVYDEV/Lightspeed-react?color=2b9348" alt="License Badge"/></a>
+  <a href="https://github.com/GRVYDEV/ITG-react/stargazers"><img src="https://img.shields.io/github/stars/GRVYDEV/ITG-react" alt="Stars Badge"/></a>
+<a href="https://github.com/GRVYDEV/ITG-react/network/members"><img src="https://img.shields.io/github/forks/GRVYDEV/ITG-react" alt="Forks Badge"/></a>
+<a href="https://github.com/GRVYDEV/ITG-react/pulls"><img src="https://img.shields.io/github/issues-pr/GRVYDEV/ITG-react" alt="Pull Requests Badge"/></a>
+<a href="https://github.com/GRVYDEV/ITG-react/issues"><img src="https://img.shields.io/github/issues/GRVYDEV/ITG-react" alt="Issues Badge"/></a>
+<a href="https://github.com/GRVYDEV/ITG-react/graphs/contributors"><img alt="GitHub contributors" src="https://img.shields.io/github/contributors/GRVYDEV/ITG-react?color=2b9348"></a>
+<a href="https://github.com/GRVYDEV/ITG-react/blob/master/LICENSE"><img src="https://img.shields.io/github/license/GRVYDEV/ITG-react?color=2b9348" alt="License Badge"/></a>
 </div>
 <br />
 <p align="center">
   <p align="center">
-    A React website that connects to Lightspeed WebRTC via a websocket to negotiate SDPs and display a WebRTC stream.
+    A React website that connects to ITG WebRTC via a websocket to negotiate SDPs and display a WebRTC stream.
     <!-- <br /> -->
-    <!-- <a href="https://github.com/GRVYDEV/Lightspeed-react"><strong>Explore the docs »</strong></a> -->
+    <!-- <a href="https://github.com/GRVYDEV/ITG-react"><strong>Explore the docs »</strong></a> -->
     <br />
     <br />
     <a href="https://youtu.be/Dzin4_A8RDs">View Demo</a>
     ·
-    <a href="https://github.com/GRVYDEV/Lightspeed-react/issues">Report Bug</a>
+    <a href="https://github.com/GRVYDEV/ITG-react/issues">Report Bug</a>
     ·
-    <a href="https://github.com/GRVYDEV/Lightspeed-react/issues">Request Feature</a>
+    <a href="https://github.com/GRVYDEV/ITG-react/issues">Request Feature</a>
   </p>
 </p>
 
@@ -60,7 +60,7 @@
 
 <!-- [![Product Name Screen Shot][product-screenshot]](https://example.com) -->
 
-This is one of three components required for Project Lightspeed. Project Lightspeed is a fully self contained live streaming server. With this you will be able to deploy your own sub-second latency live streaming platform. This particular repository connects via websocket to Lightspeed WebRTC and displays a WebRTC stream. In order for this to work the Project Lightspeed WebRTC and Project Lightspeed Ingest are required. 
+This is one of three components required for Project ITG. Project ITG is a fully self contained live streaming server. With this you will be able to deploy your own sub-second latency live streaming platform. This particular repository connects via websocket to ITG WebRTC and displays a WebRTC stream. In order for this to work the Project ITG WebRTC and Project ITG Ingest are required. 
 
 ### Built With
 
@@ -68,8 +68,8 @@ This is one of three components required for Project Lightspeed. Project Lightsp
 
 ### Dependencies
 
-- [Lightspeed WebRTC](https://github.com/GRVYDEV/Lightspeed-webrtc)
-- [Lightspeed Ingest](https://github.com/GRVYDEV/Lightspeed-ingest)
+- [ITG WebRTC](https://github.com/GRVYDEV/ITG-webrtc)
+- [ITG Ingest](https://github.com/GRVYDEV/ITG-ingest)
 
 <!-- GETTING STARTED -->
 
@@ -83,7 +83,7 @@ This is one of three components required for Project Lightspeed. Project Lightsp
 1. Build the image from the master branch with:
 
     ```sh
-    docker build -t grvydev/lightspeed-react https://github.com/GRVYDEV/Lightspeed-react.git
+    docker build -t grvydev/itg-react https://github.com/GRVYDEV/ITG-react.git
     ```
 
 1. Run it with
@@ -93,7 +93,7 @@ This is one of three components required for Project Lightspeed. Project Lightsp
       -p 8000:80/tcp \
       -e WEBSOCKET_HOST=localhost \
       -e WEBSOCKET_PORT=8080 \
-      grvydev/lightspeed-react
+      grvydev/itg-react
     ```
 
     Where your websocket host from the browser/client perspective is accessible on `localhost:8080`.
@@ -111,8 +111,8 @@ In order to run this npm is required. Installation instructions can be found <a 
 #### Installation
 
 ```sh
-git clone https://github.com/GRVYDEV/Lightspeed-react.git
-cd Lightspeed-react
+git clone https://github.com/GRVYDEV/ITG-react.git
+cd ITG-react
 npm install
 ```
 
@@ -123,7 +123,7 @@ npm install
 First build the frontend
 
 ```sh
-cd Lightspeed-react
+cd ITG-react
 npm run build
 ```
 
@@ -143,7 +143,7 @@ This will serve the build folder on port 80 of your machine meaning it can be re
 
 ## Roadmap
 
-See the [open issues](https://github.com/GRVYDEV/Lightspeed-react/issues) for a list of proposed features (and known issues).
+See the [open issues](https://github.com/GRVYDEV/ITG-react/issues) for a list of proposed features (and known issues).
 
 <!-- CONTRIBUTING -->
 
@@ -169,7 +169,7 @@ Distributed under the MIT License. See `LICENSE` for more information.
 
 Garrett Graves - [@grvydev](https://twitter.com/grvydev)
 
-Project Link: [https://github.com/GRVYDEV/Lightspeed-react](https://github.com/GRVYDEV/Lightspeed-react)
+Project Link: [https://github.com/GRVYDEV/ITG-react](https://github.com/GRVYDEV/ITG-react)
 
 <!-- ACKNOWLEDGEMENTS -->
 

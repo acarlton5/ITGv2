@@ -9,7 +9,7 @@ import {
   AlphaTag,
   ViewerTag,
 } from "../styles/videoDetailsStyles";
-import { LightspeedLogoURL } from "../assets/constants";
+import { ITGLogoURL } from "../assets/constants";
 
 const VideoDetails = ({ viewers }) => {
   return (
@@ -26,9 +26,9 @@ const VideoDetails = ({ viewers }) => {
       </DetailsTop>
       <DetailHeadingBox>
         <DetailsTitle>
-          <DetailsHeading>Welcome to Project Lightspeed</DetailsHeading>
+          <DetailsHeading>Welcome to Project ITG</DetailsHeading>
         </DetailsTitle>
-        <img id="detail-img" src={LightspeedLogoURL}></img>
+        <img id="detail-img" src={ITGLogoURL}></img>
       </DetailHeadingBox>
     </VideoDetailsContainer>
   );

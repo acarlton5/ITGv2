@@ -1,11 +1,11 @@
 version: '3'
 
 services:
-  lightspeed-ingest:
-    container_name: lightspeed-ingest
-    image: projectlightspeed/ingest
+  itg-ingest:
+    container_name: itg-ingest
+    image: projectitg/ingest
     #Uncomment below to build locally
-#    image: lightspeed-ingest
+#    image: itg-ingest
 #    build:
 #      context: ./ingest
 #      dockerfile: Dockerfile
@@ -14,11 +14,11 @@ services:
     ports:
       - "${INGEST_PORT}:8084"
 
-  lightspeed-react:
-    container_name: lightspeed-react
-    image: projectlightspeed/react
+  itg-react:
+    container_name: itg-react
+    image: projectitg/react
     #Uncomment below to build locally
-#    image: lightspeed-react
+#    image: itg-react
 #    build:
 #      context: ./frontend
 #      dockerfile: Dockerfile
@@ -27,16 +27,16 @@ services:
     ports:
       - "${WEB_PORT}:80"
 
-  lightspeed-webrtc:
-    container_name: lightspeed-webrtc
-    image: projectlightspeed/webrtc
+  itg-webrtc:
+    container_name: itg-webrtc
+    image: projectitg/webrtc
     #Uncomment below to build locally
-#    image: lightspeed-webrtc
+#    image: itg-webrtc
 #    build:
 #      context: ./webrtc
 #      dockerfile: Dockerfile
     env_file: '.env'
-    command: ["lightspeed-webrtc", "--addr=0.0.0.0", "--ip=${WEBSOCKET_HOST}", "--ports=20000-20100", "--ice-servers=${ICE_SERVERS}", "run"]
+    command: ["itg-webrtc", "--addr=0.0.0.0", "--ip=${WEBSOCKET_HOST}", "--ports=20000-20100", "--ice-servers=${ICE_SERVERS}", "run"]
     restart: on-failure
     ports:
       - ${WEBSOCKET_PORT}:8080 # WebRTC
